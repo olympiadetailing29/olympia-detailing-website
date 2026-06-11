@@ -74,7 +74,6 @@
   "paymentAccepted": "Cash, Credit Card, Zelle, Venmo",
   "sameAs": [
     "https://www.instagram.com/olympiamdetailing/",
-    "https://www.youtube.com/channel/UCxqgTV07IfJt214YjcNF62g",
     "https://nextdoor.com/pages/olympia-mobile-detailing-broomall-pa/",
     "https://www.linkedin.com/in/james-pratt-124a9520b/"
   ],
@@ -181,6 +180,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <!-- EmailJS SDK — for popup lead capture email sending -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://upload-widget.cloudinary.com/global/all.js"></script>
 <style>
 :root {
   --gold: #722F37;
@@ -236,16 +236,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255
 .btn-row{display:flex;gap:1rem;flex-wrap:wrap;}
 
 /* ─── HERO ─── */
-.hero{position:relative;min-height:90vh;display:flex;align-items:center;overflow:hidden;background:var(--page-bg);}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 65% 50%,rgba(114,47,55,0.07) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 5% 85%,rgba(114,47,55,0.05) 0%,transparent 60%);}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(114,47,55,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(114,47,55,0.05) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 0%,transparent 100%);}
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:#0a0505;}
+.hero-video-wrap{position:absolute;inset:0;z-index:0;}
+.hero-video-wrap video{width:100%;height:100%;object-fit:cover;display:block;}
+.hero-video-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,2,2,0.82) 0%,rgba(10,4,4,0.65) 50%,rgba(5,2,2,0.75) 100%);}
+.hero-bg{display:none;}
+.hero-grid{display:none;}
 .hero-content{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:4rem 2rem;width:100%;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.8rem,9vw,8.5rem);line-height:0.92;letter-spacing:2px;margin-bottom:2rem;color:var(--dark-text);}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.8rem,9vw,8.5rem);line-height:0.92;letter-spacing:2px;margin-bottom:2rem;color:#fff;}
 .hero-title .g{color:var(--gold);}
-.hero-sub{font-size:1.05rem;color:var(--mid-text);max-width:500px;margin-bottom:2.8rem;line-height:1.8;}
-.hero-stats{display:flex;gap:3rem;margin-top:4rem;padding-top:2.8rem;border-top:1px solid var(--border);flex-wrap:wrap;}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,0.75);max-width:500px;margin-bottom:2.8rem;line-height:1.8;}
+.hero-stats{display:flex;gap:3rem;margin-top:4rem;padding-top:2.8rem;border-top:1px solid rgba(255,255,255,0.12);flex-wrap:wrap;}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:var(--gold);line-height:1;}
-.stat-lbl{font-size:0.7rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);margin-top:0.25rem;}
+.stat-lbl{font-size:0.7rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:0.25rem;}
+.hero-scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:0.4rem;animation:scrollBounce 2s ease-in-out infinite;}
+.hero-scroll-hint span{font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
+.hero-scroll-hint svg{opacity:0.4;}
+@keyframes scrollBounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+
+/* ─── SCROLL ANIMATIONS ─── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-32px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(32px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+.reveal-scale{opacity:0;transform:scale(0.95);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal-scale.visible{opacity:1;transform:scale(1);}
+.stagger-1{transition-delay:0.1s;}
+.stagger-2{transition-delay:0.2s;}
+.stagger-3{transition-delay:0.3s;}
+.stagger-4{transition-delay:0.4s;}
+.stagger-5{transition-delay:0.5s;}
 
 /* ─── STRIP ─── */
 /* ─── STICKY FLOATING CTA ─── */
@@ -326,6 +348,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255
 /* ─── SERVICE CARDS ─── */
 .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;}
 .svc-card{background:#fff;padding:2.5rem 2rem;border:none;transition:border-color 0.25s,transform 0.2s,box-shadow 0.2s;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-radius:4px;}
+.svc-card:hover img{transform:scale(1.06);}
 .svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.3s;}
 .svc-card:hover::before{transform:scaleX(1);}
 .svc-card:hover{border-color:rgba(114,47,55,0.25);transform:translateY(-3px);box-shadow:0 8px 32px rgba(114,47,55,0.1);}
@@ -651,7 +674,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 @media(max-width:900px){.fleet-stats{grid-template-columns:1fr 1fr;}.fleet-tiers{grid-template-columns:1fr;}}
 @media(max-width:580px){.fleet-stats{grid-template-columns:1fr 1fr;}.fleet-industries{grid-template-columns:1fr 1fr;}}
 /* ─── BLOG TEASER ─── */
-.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem;}
+.blog-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:2.5rem;}
 .blog-card{background:#fff;border:1px solid var(--border);overflow:hidden;transition:box-shadow 0.2s,transform 0.2s;}
 .blog-card:hover{box-shadow:0 8px 32px rgba(114,47,55,0.1);transform:translateY(-3px);}
 .blog-thumb{height:160px;background:linear-gradient(135deg,#f0eaea,#e8d8d9);display:flex;align-items:center;justify-content:center;font-size:2.5rem;border-bottom:1px solid var(--border);}
@@ -674,6 +697,8 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   .city-services-grid{grid-template-columns:1fr 1fr;}
   .gallery-grid{grid-template-columns:repeat(2,1fr);}
   .blog-grid{grid-template-columns:1fr 1fr;}
+  #page-contact .sec > div{grid-template-columns:1fr !important;}
+  #page-detailing [aria-labelledby="detail-video-heading"] > div{grid-template-columns:1fr !important;}
 }
 @media(max-width:640px){
   .nav-links{display:none;}
@@ -705,6 +730,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
     <li><a onclick="showPage('areas')" id="nav-areas">Service Areas</a></li>
     <li><a onclick="showPage('about')" id="nav-about">About</a></li>
     <li><a onclick="showPage('giftcard')" id="nav-giftcard">Gift Cards</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
     <li><a onclick="showPage('booking')" id="nav-booking" class="nav-cta">Book Now</a></li>
   </ul>
   <button class="hamburger" onclick="toggleMenu()" aria-label="Open Menu">
@@ -757,6 +783,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   <a onclick="showPage('areas');toggleMenu()">Service Areas</a>
   <a onclick="showPage('giftcard');toggleMenu()">Gift Cards</a>
   <a onclick="showPage('about');toggleMenu()">About Us</a>
+  <a onclick="showPage('contact');toggleMenu()">Contact</a>
   <a onclick="showPage('booking');toggleMenu()" class="nav-cta">Book Now</a>
 </div>
 
@@ -766,16 +793,20 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 <main class="page active" id="page-home">
 
   <div class="hero" role="main">
-    <div class="hero-bg" aria-hidden="true" style="background-image:url('https://res.cloudinary.com/daktqosi1/image/upload/v1780524309/after-black-bmw-x7-suv-exterior.jpg');background-size:cover;background-position:center 40%;opacity:0.18;"></div>
-    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-video-wrap" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="https://res.cloudinary.com/daktqosi1/video/upload/v1781079276/Angelo_Edit_Video_2_Shorter_Start_compressed_bd04d8.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay"></div>
+    </div>
     <div class="hero-content">
-      <div class="eyebrow">Wayne, PA · Main Line · Greater Philadelphia</div>
-      <h1 class="hero-title">MOBILE<br>AUTO <span class="g">DETAILING</span><br>&amp; PROTECTION</h1>
-      <p class="hero-sub">5+ years restoring, protecting, and maintaining vehicles across the Main Line. Ceramic coatings, paint correction, and full detailing packages — showroom results at your door.</p>
+      <div class="eyebrow" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">Wayne, PA · Main Line · Greater Philadelphia</div>
+      <h1 class="hero-title">OLYMPIA<br><span class="g">DETAILING</span></h1>
+      <p class="hero-sub">Your paint is under constant attack — road salt, UV, pollen, and daily wear. We help Main Line vehicle owners protect their investment, restore what's been neglected, and maintain the finish long-term. 5+ years. At your door.</p>
       <div class="btn-row">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book Your Appointment</a>
-        <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
-        <a href="sms:+16106089501" class="btn-outline" style="border-color:rgba(114,47,55,0.3);">Text Us</a>
+        <a href="tel:+16106089501" class="btn-outline" style="border-color:rgba(255,255,255,0.3);color:#fff;">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">Contact Us</a>
       </div>
       <div class="hero-stats">
         <div><div class="stat-num">5+</div><div class="stat-lbl">Years Serving Wayne, PA</div></div>
@@ -783,6 +814,10 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         <div><div class="stat-num">10yr</div><div class="stat-lbl">Max Coating Warranty</div></div>
         <div><div class="stat-num">★ 5</div><div class="stat-lbl">Star Rated Service</div></div>
       </div>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
   </div>
 
@@ -795,25 +830,25 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 
 <section class="sec" aria-labelledby="services-heading">
     <div class="eyebrow">What We Do</div>
-    <h2 class="sec-title" id="services-heading">PROFESSIONAL <span class="g">SERVICES</span></h2>
+    <h2 class="sec-title" id="services-heading">HOW WE <span class="g">HELP</span></h2>
     <p class="sec-desc">Every service is performed at your location in Wayne, PA and surrounding Main Line communities. No drop-off. No waiting rooms. Showroom results at your door.</p>
     <div class="service-grid" role="list">
       <div class="svc-card" onclick="showPage('detailing')" role="listitem">
-        <div class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="9" width="22" height="9" rx="2"/><path d="M4 9V7a2 2 0 012-2h12a2 2 0 012 2v2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M7 16H1M17 16h4"/></svg></div>
+        <div style="aspect-ratio:16/10;overflow:hidden;margin:-2.5rem -2rem 1.5rem;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780558175/DSC02879_aw0f1x.jpg" alt="Olympia Detailing mobile service Porsche Wayne PA" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;"></div>
         <h3 class="svc-name">Mobile Detailing</h3>
-        <p class="svc-blurb">Full interior and exterior packages — seasonal deep clean to complete restoration. Packages from $325–$725. We bring everything to your driveway.</p>
+        <p class="svc-blurb">Your interior is stained, your paint looks tired, or you just want it maintained properly between seasons. We come to your driveway and handle it — from a seasonal refresh to a full restoration. Packages from $325–$725.</p>
         <span class="svc-link">View Packages</span>
       </div>
       <div class="svc-card" onclick="showPage('ceramic')" role="listitem">
-        <div class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div style="aspect-ratio:16/10;overflow:hidden;margin:-2.5rem -2rem 1.5rem;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780533675/ceramic-coating-honda-step-applying-coating.jpg" alt="Ceramic coating application Honda Wayne PA" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;"></div>
         <h3 class="svc-name">Ceramic Coating</h3>
-        <p class="svc-blurb">Nano-ceramic molecular bond protection. Repels road salt, UV, and contaminants. 3, 6, and 10-year packages with warranty coverage from $999.</p>
+        <p class="svc-blurb">You want your paint protected for years — not weeks. Ceramic coating creates a permanent barrier against road salt, UV, bird droppings, and everyday contaminants. We assess your paint, prep it properly, and install a coating that lasts. From $999.</p>
         <span class="svc-link">View Packages</span>
       </div>
       <div class="svc-card" onclick="showPage('correction')" role="listitem">
-        <div class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <div style="aspect-ratio:16/10;overflow:hidden;margin:-2.5rem -2rem 1.5rem;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1781081287/DSC00501_jckl23.jpg" alt="Paint correction machine polishing close up Wayne PA" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;"></div>
         <h3 class="svc-name">Paint Correction</h3>
-        <p class="svc-blurb">Machine polishing that eliminates swirl marks, light scratches, and oxidation. The mandatory foundation before any professional ceramic coating install.</p>
+        <p class="svc-blurb">Your paint has swirl marks from bad washes, scratches from daily life, or oxidation from years of sun. We bring it back — panel by panel, under controlled lighting — until the finish looks better than the day you bought it.</p>
         <span class="svc-link">View Packages</span>
       </div>
     </div>
@@ -860,8 +895,6 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
           <div class="review-author">Nancy K.</div>
           <div class="review-meta">Interior Detail · 11 months ago</div>
         </div>
-          <div class="review-meta">Ceramic Coating · 1 year ago</div>
-        </div>
 
         <div class="review-card" role="listitem" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,rgba(114,47,55,0.04),rgba(114,47,55,0.08));border:1px dashed rgba(114,47,55,0.2);">
           <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--gold);line-height:1;">★ 5.0</div>
@@ -872,21 +905,6 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       </div>
     </div>
 
-
-  <div class="sec-alt" aria-labelledby="why-heading">
-    <div class="inner">
-      <div class="eyebrow">Why Olympia</div>
-      <h2 class="sec-title" id="why-heading">THE <span class="g">DIFFERENCE</span></h2>
-      <div class="why-grid">
-        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3 class="why-title">We Come to You</h3><p class="why-text">100% mobile service across Wayne, King of Prussia, Villanova, Malvern, and Greater Philadelphia. Your schedule, your location.</p></div>
-        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M9 3v8L5.5 19a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L15 11V3"/></svg></div><h3 class="why-title">Pro-Grade Products</h3><p class="why-text">pH-neutral soaps, hydrophobic ceramic coatings, and industry-standard machine polish systems — the same tools used by high-end detailing shops.</p></div>
-        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3 class="why-title">Warranty Backed</h3><p class="why-text">Ceramic packages include up to a lifetime paint warranty with a complimentary 2-week post-install inspection detail included.</p></div>
-        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3 class="why-title">5-Star Rated</h3><p class="why-text">Consistent 5-star results across Wayne, King of Prussia, Villanova, Malvern, and Newtown Square. Our work speaks for itself.</p></div>
-        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 19.34A1 1 0 004.7 21C8 20 12 19 15 16c2-2 3-5 2-8z"/><path d="M3.82 19.34L8 14"/></svg></div><h3 class="why-title">Eco-Friendly</h3><p class="why-text">Environmentally conscious products and water-smart processes. Safe for your vehicle, your driveway, and your neighborhood.</p></div>
-        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div><h3 class="why-title">Detailing as Maintenance</h3><p class="why-text">We educate every client on the corrosive reality of PA road salt and the long-term cost of neglect versus the cost of proper protection.</p></div>
-      </div>
-    </div>
-  </div>
 
   <!-- BEFORE & AFTER SLIDER -->
   <section class="sec" aria-labelledby="gallery-heading">
@@ -932,6 +950,40 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   </section>
 
   <!-- ═══ COMPARISON TABLE ═══ -->
+  <section class="sec" aria-labelledby="video-heading">
+    <div class="eyebrow">See the Process</div>
+    <h2 class="sec-title" id="video-heading">WATCH US <span class="g">WORK</span></h2>
+    <p class="sec-desc">See exactly what a professional mobile detail looks like from start to finish — the products, the process, and the result.</p>
+    <div style="margin-top:2rem;border-radius:4px;overflow:hidden;background:#000;">
+      <video
+        src="https://res.cloudinary.com/daktqosi1/video/upload/v1781083299/Lambo_Detailing_16X9_compressed_cltxmp.mp4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        style="width:100%;max-height:560px;object-fit:cover;display:block;"
+        aria-label="Olympia Detailing — Lamborghini full detail process">
+      </video>
+    </div>
+  </section>
+
+  <!-- ═══ MONTHLY RECURRING SERVICE ═══ -->
+  <div class="sec-alt" aria-labelledby="why-heading">
+    <div class="inner">
+      <div class="eyebrow">Why Olympia</div>
+      <h2 class="sec-title" id="why-heading">THE <span class="g">DIFFERENCE</span></h2>
+      <div class="why-grid">
+        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><h3 class="why-title">We Come to You</h3><p class="why-text">100% mobile service across Wayne, King of Prussia, Villanova, Malvern, and Greater Philadelphia. Your schedule, your location.</p></div>
+        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M9 3v8L5.5 19a1 1 0 00.9 1.5h11.2a1 1 0 00.9-1.5L15 11V3"/></svg></div><h3 class="why-title">Pro-Grade Products</h3><p class="why-text">pH-neutral soaps, hydrophobic ceramic coatings, and industry-standard machine polish systems — the same tools used by high-end detailing shops.</p></div>
+        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3 class="why-title">Warranty Backed</h3><p class="why-text">Ceramic packages include up to a lifetime paint warranty with a complimentary 2-week post-install inspection detail included.</p></div>
+        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><h3 class="why-title">5-Star Rated</h3><p class="why-text">Consistent 5-star results across Wayne, King of Prussia, Villanova, Malvern, and Newtown Square. Our work speaks for itself.</p></div>
+        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 19.34A1 1 0 004.7 21C8 20 12 19 15 16c2-2 3-5 2-8z"/><path d="M3.82 19.34L8 14"/></svg></div><h3 class="why-title">Eco-Friendly</h3><p class="why-text">Environmentally conscious products and water-smart processes. Safe for your vehicle, your driveway, and your neighborhood.</p></div>
+        <div class="why-item"><div class="why-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div><h3 class="why-title">Detailing as Maintenance</h3><p class="why-text">We educate every client on the corrosive reality of PA road salt and the long-term cost of neglect versus the cost of proper protection.</p></div>
+      </div>
+    </div>
+  </div>
+
   <div class="sec-alt">
     <div class="inner">
       <div class="eyebrow">Why Professional Detailing Wins</div>
@@ -961,29 +1013,15 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   </div>
 
   <!-- ═══ YOUTUBE VIDEO ═══ -->
-  <section class="sec" aria-labelledby="video-heading">
-    <div class="eyebrow">See the Process</div>
-    <h2 class="sec-title" id="video-heading">WATCH US <span class="g">WORK</span></h2>
-    <p class="sec-desc">See exactly what a professional mobile detail looks like from start to finish — the products, the process, and the result. Subscribe for more before &amp; afters from the Main Line.</p>
-    <div class="video-wrap" id="videoWrap">
-      <div class="video-placeholder" onclick="loadVideo()" role="button" tabindex="0" aria-label="Play Olympia Detailing YouTube video" onkeydown="if(event.key==='Enter')loadVideo()">
-        <div class="play-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-        <div class="video-label">Watch Our Detailing Process</div>
-        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;">Olympia Detailing · YouTube</div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:1.5rem;">
-      <a href="https://www.youtube.com/channel/UCxqgTV07IfJt214YjcNF62g" target="_blank" rel="noopener" class="btn-outline">View All Videos on YouTube</a>
-    </div>
-  </section>
-
-  <!-- ═══ MONTHLY RECURRING SERVICE ═══ -->
   <div class="sec-alt">
     <div class="inner">
       <div class="eyebrow">Keep Your Vehicle Maintained</div>
       <h2 class="sec-title">EXPRESS <span class="g">MAINTENANCE PLAN</span></h2>
       <p class="sec-desc">Keep your vehicle clean year-round with recurring Express Details. Choose your frequency — we handle the rest.</p>
-      <div style="max-width:800px;margin:2.5rem auto 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;max-width:1000px;margin:2.5rem auto 0;">
+        <div style="aspect-ratio:4/5;overflow:hidden;border-radius:4px;">
+          <img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780558175/DSC02879_aw0f1x.jpg" alt="Olympia Detailing mobile service Porsche Wayne PA driveway" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
         <div class="pkg-card featured">
           <div class="pkg-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
             <div>
@@ -1011,31 +1049,17 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 
   <section class="sec">
     <div class="cta-banner">
-      <h2>READY TO PROTECT YOUR INVESTMENT?</h2>
-      <p>Book online or call directly. We'll have your car dialed in — take a look.</p>
+      <h2>NOT SURE WHAT YOUR VEHICLE NEEDS?</h2>
+      <p>Tell us what's going on with your paint or interior. We'll assess the situation and give you a straight recommendation — no pressure, no upsell.</p>
       <div class="btn-row" style="justify-content:center;">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book Now</a>
         <a href="tel:6106089501" class="btn-outline">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;">Contact Us</a>
       </div>
     </div>
   </section>
 
   <!-- ═══ GIFT CARDS ═══ -->
-  <section class="sec">
-    <div class="gift-banner" role="complementary" aria-label="Gift Card Offer">
-      <div>
-        <div class="gift-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg> Gift Cards Available</div>
-        <h2 class="gift-title">GIVE THE GIFT OF A<br><span style="color:var(--gold);">PERFECT DETAIL</span></h2>
-        <p class="gift-desc">Birthdays, anniversaries, graduations, Father's Day — a detail from Olympia is a gift that actually gets used. Available in any amount. Contact us to purchase and we'll handle the rest.</p>
-        <div class="btn-row" style="margin-top:1.5rem;">
-          <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly/iXYllc2GJ0EK0E13kEjT" target="_blank" rel="noopener" class="btn-primary">Purchase a Gift Card</a>
-          <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
-        </div>
-      </div>
-      <div class="gift-visual" aria-hidden="true" style="font-size:5rem;">🎁</div>
-    </div>
-  </section>
-
   <!-- CERTIFICATIONS -->  <!-- CERTIFICATIONS -->
   <!-- CERTIFICATIONS -->
   <div class="sec-alt">
@@ -1062,7 +1086,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
           <div class="cert-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           <div class="cert-info">
             <div class="cert-name">5+ Years in Business</div>
-            <div class="cert-sub">Owner-Operated · James Pratt</div>
+            <div class="cert-sub">Owner-Operated · Wayne, PA</div>
           </div>
         </div>
         <div class="cert-badge">
@@ -1086,17 +1110,34 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <h2 class="sec-title" id="areas-home-heading">WE SERVE YOUR <span class="g">NEIGHBORHOOD</span></h2>
       <p class="sec-desc">Fully mobile across the Main Line and Greater Philadelphia. Click your area for local service details.</p>
       <div class="area-nav" role="list">
-        <div class="area-btn" onclick="showPage('city-wayne')" role="listitem">Wayne<span>Chester County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-kop')" role="listitem">King of Prussia<span>Montgomery County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-villanova')" role="listitem">Villanova<span>Delaware County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-malvern')" role="listitem">Malvern<span>Chester County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-newtownsquare')" role="listitem">Newtown Square<span>Delaware County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-plymouthmeeting')" role="listitem">Plymouth Meeting<span>Montgomery County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-philadelphia')" role="listitem">Philadelphia<span>Philadelphia County, PA</span></div>
-        <div class="area-btn" onclick="showPage('city-berwyn')" role="listitem">Berwyn<span>Chester County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-wayne-pa" role="listitem">Wayne<span>Chester County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-king-of-prussia-pa" role="listitem">King of Prussia<span>Montgomery County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-villanova-pa" role="listitem">Villanova<span>Delaware County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-malvern-pa" role="listitem">Malvern<span>Chester County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-newtown-square-pa" role="listitem">Newtown Square<span>Delaware County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-plymouth-meeting-pa" role="listitem">Plymouth Meeting<span>Montgomery County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-philadelphia-pa" role="listitem">Philadelphia<span>Philadelphia County, PA</span></div>
+        <div class="area-btn" href="/mobile-detailing-berwyn-pa" role="listitem">Berwyn<span>Chester County, PA</span></div>
       </div>
     </div>
-  </div>\n\n<!-- ═══ INSTAGRAM FEED ═══ -->
+  </div>
+
+<!-- ═══ INSTAGRAM FEED ═══ -->
+  <section class="sec">
+    <div class="gift-banner" role="complementary" aria-label="Gift Card Offer">
+      <div>
+        <div class="gift-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg> Gift Cards Available</div>
+        <h2 class="gift-title">GIVE THE GIFT OF A<br><span style="color:var(--gold);">PERFECT DETAIL</span></h2>
+        <p class="gift-desc">Birthdays, anniversaries, graduations, Father's Day — a detail from Olympia is a gift that actually gets used. Available in any amount. Contact us to purchase and we'll handle the rest.</p>
+        <div class="btn-row" style="margin-top:1.5rem;">
+          <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly/iXYllc2GJ0EK0E13kEjT" target="_blank" rel="noopener" class="btn-primary">Purchase a Gift Card</a>
+          <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
+        </div>
+      </div>
+      <div class="gift-visual" aria-hidden="true" style="font-size:5rem;">🎁</div>
+    </div>
+  </section>
+
   <div class="sec-alt">
     <div class="inner">
       <div class="eyebrow">Real Results · Main Line Vehicles</div>
@@ -1123,7 +1164,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
     <p class="sec-desc">Real advice from a working detailer on the Main Line — no filler, no fluff. Click any article to read the full post.</p>
     <div class="blog-grid">
       <div class="blog-card" onclick="showPage('blog1')" style="cursor:pointer;">
-        <div class="blog-thumb" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" stroke="var(--gold)" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/><line x1="12" y1="10" x2="12" y2="17"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/></svg></div>
+        <div style="aspect-ratio:16/10;overflow:hidden;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780547561/IMG_5129_1_uqflmr.jpg" alt="Pennsylvania road salt paint damage" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"></div>
         <div class="blog-body">
           <div class="blog-cat">Paint Protection · Wayne, PA</div>
           <h3 class="blog-title">How Pennsylvania Road Salt Destroys Your Paint — And How to Stop It</h3>
@@ -1132,7 +1173,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
       </div>
       <div class="blog-card" onclick="showPage('blog2')" style="cursor:pointer;">
-        <div class="blog-thumb" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" stroke="var(--gold)" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5l3 3-10 10H4v-3.5l10-10zM16 2l3 3M4 20h16"/></svg></div>
+        <div style="aspect-ratio:16/10;overflow:hidden;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780533675/ceramic-coating-honda-step-applying-coating.jpg" alt="Ceramic coating application vs wax" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"></div>
         <div class="blog-body">
           <div class="blog-cat">Ceramic Coating · Main Line</div>
           <h3 class="blog-title">Ceramic Coating vs. Wax: What Main Line Car Owners Actually Need to Know</h3>
@@ -1141,11 +1182,20 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
       </div>
       <div class="blog-card" onclick="showPage('blog3')" style="cursor:pointer;">
-        <div class="blog-thumb" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" stroke="var(--gold)" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="9" width="22" height="9" rx="2"/><path d="M4 9V7a2 2 0 012-2h12a2 2 0 012 2v2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></div>
+        <div style="aspect-ratio:16/10;overflow:hidden;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780552568/IMG_7450_crrac5.jpg" alt="Professional mobile detail McLaren Wayne PA" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"></div>
         <div class="blog-body">
           <div class="blog-cat">Mobile Detailing · Wayne, PA</div>
           <h3 class="blog-title">What to Expect From a Professional Mobile Detail in Wayne, PA</h3>
           <p class="blog-excerpt">First time booking a mobile detail? Here's exactly what happens from the moment we arrive at your driveway to the final walk-around — and what separates a professional from a guy with a bucket.</p>
+          <span class="blog-read">Read Article</span>
+        </div>
+      </div>
+      <div class="blog-card" onclick="showPage('blog4')" style="cursor:pointer;">
+        <div style="aspect-ratio:16/10;overflow:hidden;"><img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780558175/DSC02879_aw0f1x.jpg" alt="Olympia Detailing add-on services Wayne PA" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'"></div>
+        <div class="blog-body">
+          <div class="blog-cat">Add-On Services · Main Line</div>
+          <h3 class="blog-title">Beyond the Detail: Add-On Services That Take Your Vehicle to the Next Level</h3>
+          <p class="blog-excerpt">Headlight restoration, engine bay cleaning, trim dye, pet hair removal, and more — every add-on we offer and when your vehicle actually needs them.</p>
           <span class="blog-read">Read Article</span>
         </div>
       </div>
@@ -1160,14 +1210,21 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 ═══════════════════════════════════════════════ -->
 <main class="page" id="page-detailing">
 
-  <div class="page-hero">
-    <div class="inner">
-      <div class="eyebrow">Mobile Service — We Come to You | Wayne, PA</div>
-      <h1><span class="g">MOBILE AUTO</span><br>DETAILING</h1>
-      <p>Professional mobile auto detailing serving Wayne, PA and the Main Line. Three comprehensive packages — from a seasonal deep clean to a full-day showroom restoration — all performed at your location. No drop-off required.</p>
+  <div class="hero" style="min-height:85vh;">
+    <div class="hero-video-wrap" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="https://res.cloudinary.com/daktqosi1/video/upload/v1781086027/Q60sCompletedetail_Videoedit_compressed_rrqxtm.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">Mobile Service — We Come to You | Wayne, PA</div>
+      <h1 class="hero-title"><span class="g">MOBILE AUTO</span><br>DETAILING</h1>
+      <p class="hero-sub">Professional mobile auto detailing serving Wayne, PA and the Main Line. Three comprehensive packages — from a seasonal deep clean to a full-day showroom restoration — all performed at your location.</p>
       <div class="btn-row">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book Online</a>
-        <a href="tel:6106089501" class="btn-outline">Call (610) 608-9501</a>
+        <a href="tel:6106089501" class="btn-outline" style="border-color:rgba(255,255,255,0.3);color:#fff;">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">Contact Us</a>
       </div>
     </div>
   </div>
@@ -1280,18 +1337,31 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   </section>
 
   <section class="sec" aria-labelledby="detail-video-heading">
-    <div class="eyebrow">Watch the Work · Porsche Interior Detail</div>
+    <div class="eyebrow">Watch the Work · Full Deep Clean</div>
     <h2 class="sec-title" id="detail-video-heading">SEE THE <span class="g">PROCESS</span></h2>
-    <p class="sec-desc">A full interior detail on a Porsche — steam cleaning, extraction, leather conditioning, and the full reveal. This is what showroom standard looks like in practice.</p>
-    <div style="margin-top:2rem;border-radius:4px;overflow:hidden;position:relative;padding-bottom:56.25%;height:0;">
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/XkBbd_U1fyE?rel=0"
-        title="Olympia Detailing — Porsche Interior Detail Wayne PA"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen
-        style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:4px;">
-      </iframe>
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:2.5rem;align-items:start;margin-top:2rem;">
+      <div style="border-radius:4px;overflow:hidden;background:#000;max-height:530px;">
+        <video
+          src="https://res.cloudinary.com/daktqosi1/video/upload/v1781138419/Range_Rover_Full_Deep_Clean_compressed_mss4fc.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          style="width:100%;max-height:530px;object-fit:contain;display:block;"
+          aria-label="Olympia Detailing — Range Rover full deep clean with pet hair removal">
+        </video>
+      </div>
+      <div style="padding-top:1rem;">
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:1px;line-height:1.1;margin-bottom:1rem;">RANGE ROVER <span style="color:var(--gold);">DEEP CLEAN</span></h3>
+        <p style="color:var(--mid-text);font-size:0.95rem;line-height:1.85;margin-bottom:1.5rem;">This Range Rover came in with heavy pet hair embedded in every fabric surface, dirt packed into the carpets, and months of daily wear across the interior. The owner had tried vacuuming at home — it barely made a dent.</p>
+        <p style="color:var(--mid-text);font-size:0.95rem;line-height:1.85;margin-bottom:1.5rem;">We extracted every surface, steam-cleaned the seats and door panels, removed pet hair with specialized tools, and conditioned all leather and trim. The result is a complete interior reset — not just clean, but restored.</p>
+        <p style="color:var(--mid-text);font-size:0.95rem;line-height:1.85;margin-bottom:2rem;">This is what our Signature and Elite packages are built for. If your interior has been neglected or you're dealing with a specific problem like pet hair, stains, or odor — this is the level of work we bring to your driveway.</p>
+        <div class="btn-row">
+          <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book a Detail</a>
+          <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;">Tell Us What You Need</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1466,15 +1536,21 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 <main class="page" id="page-ceramic">
 
   <!-- ═══ HERO ═══ -->
-  <div class="page-hero">
-    <div class="inner">
-      <div class="eyebrow">System X Certified Installer · Wayne, PA &amp; Main Line</div>
-      <h1><span class="g">CERAMIC COATING</span><br>MAIN LINE, PA.</h1>
-      <p>Professional System X ceramic coating installation serving Wayne, PA, King of Prussia, Villanova, and Greater Philadelphia. A permanent nano-ceramic glass shield — 9H hardness, hydrophobic self-cleaning, and warranty coverage up to a lifetime. Mobile installation at your door.</p>
+  <div class="hero" style="min-height:85vh;">
+    <div class="hero-video-wrap" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="https://res.cloudinary.com/daktqosi1/video/upload/v1781085248/Ceramic-Coating-Shortened-compressed_ou2vga.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">System X Certified Installer · Wayne, PA &amp; Main Line</div>
+      <h1 class="hero-title"><span class="g">CERAMIC COATING</span><br>MAIN LINE, PA.</h1>
+      <p class="hero-sub">Professional System X ceramic coating installation serving Wayne, PA, King of Prussia, Villanova, and Greater Philadelphia. A permanent nano-ceramic glass shield — 9H hardness, hydrophobic self-cleaning, and warranty coverage up to a lifetime.</p>
       <div class="btn-row">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book a Coating</a>
-        <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
-        <a href="sms:+16106089501" class="btn-outline" style="border-color:rgba(114,47,55,0.3);">Text Us</a>
+        <a href="tel:+16106089501" class="btn-outline" style="border-color:rgba(255,255,255,0.3);color:#fff;">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">Contact Us</a>
       </div>
     </div>
   </div>
@@ -1797,8 +1873,6 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
           <div class="review-author">Tyler W.</div>
           <div class="review-meta">Ceramic Coating · 1 year ago</div>
         </div>
-          <div class="review-meta">Interior Detail · 11 months ago</div>
-        </div>
 
         <div class="review-card" role="listitem" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,rgba(114,47,55,0.04),rgba(114,47,55,0.08));border:1px dashed rgba(114,47,55,0.2);">
           <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--gold);line-height:1;">★ 5.0</div>
@@ -1896,7 +1970,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Can I apply ceramic coating myself? <span class="faq-icon">+</span></button>
-        <div class="faq-a">Professional-grade ceramic coatings like System X must be applied by trained and certified installers. The prep work alone — decontamination, clay bar, machine polish, IPA wipe-down — requires professional equipment and expertise. An improperly prepped or applied coating will fail prematurely and lock in paint defects. James at Olympia Detailing is a certified System X installer serving Wayne, PA and the Main Line.</div>
+        <div class="faq-a">Professional-grade ceramic coatings like System X must be applied by trained and certified installers. The prep work alone — decontamination, clay bar, machine polish, IPA wipe-down — requires professional equipment and expertise. An improperly prepped or applied coating will fail prematurely and lock in paint defects. Our team at Olympia Detailing includes certified System X installers serving Wayne, PA and the Main Line.</div>
       </div>
     </div>
   </section>
@@ -1922,14 +1996,21 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 ═══════════════════════════════════════════════ -->
 <main class="page" id="page-correction">
 
-  <div class="page-hero">
-    <div class="inner">
-      <div class="eyebrow">Machine Polishing &amp; Paint Restoration | Wayne, PA</div>
-      <h1><span class="g">PAINT</span><br>CORRECTION</h1>
-      <p>Professional paint correction serving Wayne, PA and the Main Line. Three packages — 1-step, 2-step, and 3-step machine polish — eliminating swirl marks, scratches, oxidation, and water spot etching. From $449. The mandatory foundation before any ceramic coating install.</p>
+  <div class="hero" style="min-height:85vh;">
+    <div class="hero-video-wrap" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="https://res.cloudinary.com/daktqosi1/video/upload/v1781153308/Paint_Polishing_Background_Video_dk2z7j.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">Machine Polishing &amp; Paint Restoration | Wayne, PA</div>
+      <h1 class="hero-title"><span class="g">PAINT</span><br>CORRECTION</h1>
+      <p class="hero-sub">Professional paint correction serving Wayne, PA and the Main Line. 1-step, 2-step, and 3-step machine polish — eliminating swirl marks, scratches, oxidation, and water spot etching. The mandatory foundation before any ceramic coating install.</p>
       <div class="btn-row">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book Paint Correction</a>
-        <a href="tel:6106089501" class="btn-outline">Call (610) 608-9501</a>
+        <a href="tel:6106089501" class="btn-outline" style="border-color:rgba(255,255,255,0.3);color:#fff;">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">Contact Us</a>
       </div>
     </div>
   </div>
@@ -2140,6 +2221,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div class="btn-row" style="justify-content:center;">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book Now</a>
         <a href="tel:6106089501" class="btn-outline">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;">Contact Us</a>
       </div>
     </div>
   </section>
@@ -2263,11 +2345,12 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   <!-- CTA -->
   <section class="sec">
     <div class="cta-banner">
-      <h2>READY TO WORK WITH US?</h2>
-      <p>Book your appointment online or call James directly at (610) 608-9501. Serving Wayne, the Main Line, and Greater Philadelphia.</p>
+      <h2>LET'S TALK ABOUT YOUR VEHICLE</h2>
+      <p>Tell us what you're dealing with — we'll give you an honest assessment and a clear recommendation. No commitment required.</p>
       <div class="btn-row" style="justify-content:center;">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book Now</a>
         <a href="tel:6106089501" class="btn-outline">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;">Contact Us</a>
       </div>
     </div>
   </section>
@@ -2282,21 +2365,53 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Mobile Auto Detailing Service Areas — Olympia Detailing",
-    "description": "Olympia Detailing serves Wayne, King of Prussia, Villanova, Malvern, Newtown Square, Plymouth Meeting, Philadelphia, and Berwyn PA. 100% mobile — we come to you.",
-    "url": "https://www.olympiadetailing.com/service-areas"
+    "@type": "Service",
+    "name": "Mobile Auto Detailing — Olympia Detailing",
+    "description": "Professional mobile auto detailing, ceramic coating, and paint correction serving Wayne, King of Prussia, Villanova, Malvern, Newtown Square, Plymouth Meeting, Philadelphia, and Berwyn PA. 100% mobile — we come to you.",
+    "url": "https://www.olympiadetailing.com/service-areas",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Olympia Detailing",
+      "telephone": "+16106089501",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Wayne",
+        "addressRegion": "PA",
+        "postalCode": "19087",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 40.0440,
+        "longitude": -75.3879
+      }
+    },
+    "areaServed": [
+      {"@type": "City", "name": "Wayne", "sameAs": "https://en.wikipedia.org/wiki/Wayne,_Pennsylvania"},
+      {"@type": "City", "name": "King of Prussia"},
+      {"@type": "City", "name": "Villanova"},
+      {"@type": "City", "name": "Malvern"},
+      {"@type": "City", "name": "Newtown Square"},
+      {"@type": "City", "name": "Plymouth Meeting"},
+      {"@type": "City", "name": "Philadelphia"},
+      {"@type": "City", "name": "Berwyn"}
+    ]
   }
   </script>
 
-  <div class="page-hero">
-    <div class="inner">
-      <div class="eyebrow">100% Mobile · We Come to You</div>
-      <h1><span class="g">SERVICE</span><br>AREAS</h1>
-      <p>Olympia Detailing serves Wayne, PA and surrounding communities across Chester, Delaware, and Montgomery Counties and Greater Philadelphia. Click your area for local service details, pricing, and booking.</p>
+  <div class="hero" style="min-height:70vh;">
+    <div style="position:absolute;inset:0;z-index:0;">
+      <img src="https://res.cloudinary.com/daktqosi1/image/upload/v1780558175/DSC02879_aw0f1x.jpg" alt="Olympia Detailing mobile auto detailing van servicing Porsche in Wayne PA Main Line driveway" loading="eager" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="hero-video-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <div class="eyebrow" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.15);">100% Mobile · Chester, Delaware &amp; Montgomery Counties</div>
+      <h1 class="hero-title"><span class="g">SERVICE</span><br>AREAS</h1>
+      <p class="hero-sub">Olympia Detailing serves Wayne, PA and surrounding communities across the Main Line and Greater Philadelphia. We bring everything — water, power, and professional-grade products — directly to your door.</p>
       <div class="btn-row">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book in Your Area</a>
-        <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
+        <a href="tel:+16106089501" class="btn-outline" style="border-color:rgba(255,255,255,0.3);color:#fff;">Call (610) 608-9501</a>
+        <a onclick="showPage('contact')" class="btn-outline" style="cursor:pointer;border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);">Contact Us</a>
       </div>
     </div>
   </div>
@@ -2304,17 +2419,35 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   <section class="sec">
     <div class="eyebrow">Select Your Location</div>
     <h2 class="sec-title">AREAS WE <span class="g">SERVE</span></h2>
-    <p class="sec-desc">Select your area for location-specific service details and SEO-targeted information about mobile detailing near you.</p>
+    <p class="sec-desc">Select your area for location-specific service details and booking. Every community listed below receives the same mobile service — same equipment, same products, same standard.</p>
     <div class="area-nav" role="list">
-      <div class="area-btn" onclick="showPage('city-wayne')" role="listitem">Wayne, PA<span>Chester County · 19087</span></div>
-      <div class="area-btn" onclick="showPage('city-kop')" role="listitem">King of Prussia<span>Montgomery County · 19406</span></div>
-      <div class="area-btn" onclick="showPage('city-villanova')" role="listitem">Villanova<span>Delaware County · 19085</span></div>
-      <div class="area-btn" onclick="showPage('city-malvern')" role="listitem">Malvern<span>Chester County · 19355</span></div>
-      <div class="area-btn" onclick="showPage('city-newtownsquare')" role="listitem">Newtown Square<span>Delaware County · 19073</span></div>
-      <div class="area-btn" onclick="showPage('city-plymouthmeeting')" role="listitem">Plymouth Meeting<span>Montgomery County · 19462</span></div>
-      <div class="area-btn" onclick="showPage('city-philadelphia')" role="listitem">Philadelphia<span>Philadelphia County · 19103</span></div>
-      <div class="area-btn" onclick="showPage('city-berwyn')" role="listitem">Berwyn<span>Chester County · 19312</span></div>
+      <div class="area-btn" href="/mobile-detailing-wayne-pa" role="listitem">Wayne, PA<span>Chester County · 19087</span></div>
+      <div class="area-btn" href="/mobile-detailing-king-of-prussia-pa" role="listitem">King of Prussia<span>Montgomery County · 19406</span></div>
+      <div class="area-btn" href="/mobile-detailing-villanova-pa" role="listitem">Villanova<span>Delaware County · 19085</span></div>
+      <div class="area-btn" href="/mobile-detailing-malvern-pa" role="listitem">Malvern<span>Chester County · 19355</span></div>
+      <div class="area-btn" href="/mobile-detailing-newtown-square-pa" role="listitem">Newtown Square<span>Delaware County · 19073</span></div>
+      <div class="area-btn" href="/mobile-detailing-plymouth-meeting-pa" role="listitem">Plymouth Meeting<span>Montgomery County · 19462</span></div>
+      <div class="area-btn" href="/mobile-detailing-philadelphia-pa" role="listitem">Philadelphia<span>Philadelphia County · 19103</span></div>
+      <div class="area-btn" href="/mobile-detailing-berwyn-pa" role="listitem">Berwyn<span>Chester County · 19312</span></div>
     </div>
+  </section>
+
+  <section class="sec" style="padding-top:0;">
+    <div class="eyebrow">Coverage Map · Main Line &amp; Greater Philadelphia</div>
+    <h2 class="sec-title">FIND US <span class="g">NEAR YOU</span></h2>
+    <div style="margin-top:2rem;border-radius:4px;overflow:hidden;border:1px solid var(--border);">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d97671.0!2d-75.5356184!3d39.852235!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c6e3c57ca9f826%3A0xe5f564bcc69fc404!2sOlympia%20Detailing!5e0!3m2!1sen!2sus!4v1"
+        width="100%"
+        height="400"
+        style="border:0;display:block;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Olympia Detailing service area map Wayne PA Main Line">
+      </iframe>
+    </div>
+    <p style="text-align:center;font-size:0.82rem;color:var(--light-text);margin-top:1rem;">Don't see your area? Call <a href="tel:6106089501" style="color:var(--gold);font-weight:700;">(610) 608-9501</a> — we likely cover it.</p>
   </section>
 
   <footer>FOOTER_PLACEHOLDER</footer>
@@ -2409,7 +2542,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Wayne residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Wayne clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Wayne clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Wayne, PA? <span class="faq-icon">+</span></button>
@@ -2417,7 +2550,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Wayne? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Wayne location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Wayne location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -2525,7 +2658,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for King of Prussia residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most King of Prussia clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most King of Prussia clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in King of Prussia, PA? <span class="faq-icon">+</span></button>
@@ -2533,7 +2666,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in King of Prussia? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your King of Prussia location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your King of Prussia location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -2641,7 +2774,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Villanova residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Villanova clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Villanova clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Villanova, PA? <span class="faq-icon">+</span></button>
@@ -2649,7 +2782,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Villanova? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Villanova location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Villanova location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -2757,7 +2890,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Malvern residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Malvern clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Malvern clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Malvern, PA? <span class="faq-icon">+</span></button>
@@ -2765,7 +2898,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Malvern? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Malvern location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Malvern location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -2873,7 +3006,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Newtown Square residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Newtown Square clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Newtown Square clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Newtown Square, PA? <span class="faq-icon">+</span></button>
@@ -2881,7 +3014,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Newtown Square? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Newtown Square location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Newtown Square location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -2989,7 +3122,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Plymouth Meeting residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Plymouth Meeting clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Plymouth Meeting clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Plymouth Meeting, PA? <span class="faq-icon">+</span></button>
@@ -2997,7 +3130,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Plymouth Meeting? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Plymouth Meeting location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Plymouth Meeting location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -3105,7 +3238,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Philadelphia residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Philadelphia clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Philadelphia clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Philadelphia, PA? <span class="faq-icon">+</span></button>
@@ -3113,7 +3246,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Philadelphia? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Philadelphia location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Philadelphia location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -3221,7 +3354,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">What is the best auto detailing package for Berwyn residents? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Most Berwyn clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and James will assess your vehicle and recommend the right approach.</div>
+          <div class="faq-a">Most Berwyn clients choose our Signature Detail ($525) for comprehensive cleaning and restoration, or move straight to a ceramic coating package ($999+) for long-term paint protection against Pennsylvania road salt. Call us and our team will assess your vehicle and recommend the right approach.</div>
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">Is ceramic coating worth it in Berwyn, PA? <span class="faq-icon">+</span></button>
@@ -3229,7 +3362,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         </div>
         <div class="faq-item">
           <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">How do I book a mobile detail in Berwyn? <span class="faq-icon">+</span></button>
-          <div class="faq-a">Book directly through our online booking system or call James at (610) 608-9501. We'll confirm your appointment and show up at your Berwyn location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
+          <div class="faq-a">Book directly through our online booking system or call us at (610) 608-9501. We'll confirm your appointment and show up at your Berwyn location fully equipped — water, power, and all products included. No drop-off, no waiting.</div>
         </div>
       </div>
     </div>
@@ -3272,7 +3405,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div class="article-cat">Paint Protection · Wayne, PA</div>
       <h1 class="article-h1">How Pennsylvania Road Salt Destroys Your Car Paint — And How to Stop It</h1>
       <div class="article-meta">
-        <span>By <strong>James Pratt</strong> · Olympia Detailing</span>
+        <span>By <strong>Olympia Detailing</strong></span>
         <span>Wayne, PA</span>
         <span>7 min read</span>
       </div>
@@ -3413,7 +3546,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div class="article-cat">Ceramic Coating · Main Line, PA</div>
       <h1 class="article-h1">Ceramic Coating vs. Wax: What Main Line Car Owners Actually Need to Know</h1>
       <div class="article-meta">
-        <span>By <strong>James Pratt</strong> · Olympia Detailing</span>
+        <span>By <strong>Olympia Detailing</strong></span>
         <span>Wayne, PA</span>
         <span>6 min read</span>
       </div>
@@ -3560,7 +3693,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div class="article-cat">Mobile Detailing · Wayne, PA</div>
       <h1 class="article-h1">What to Expect From a Professional Mobile Detail in Wayne, PA</h1>
       <div class="article-meta">
-        <span>By <strong>James Pratt</strong> · Olympia Detailing</span>
+        <span>By <strong>Olympia Detailing</strong></span>
         <span>Wayne, PA</span>
         <span>5 min read</span>
       </div>
@@ -3649,7 +3782,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 
     <div class="article-cta">
       <h3>READY TO SEE THE DIFFERENCE?</h3>
-      <p>Mobile detailing in Wayne, King of Prussia, Villanova, Malvern, and Greater Philadelphia. Book online or call James directly.</p>
+      <p>Mobile detailing in Wayne, King of Prussia, Villanova, Malvern, and Greater Philadelphia. Book online or call us directly.</p>
       <div class="btn-row" style="justify-content:center;">
         <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary">Book a Detail</a>
         <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
@@ -3681,6 +3814,51 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 <!-- ═══════════════════════════════════════════════
      FLEET / COMMERCIAL PAGE
 ═══════════════════════════════════════════════ -->
+<main class="page" id="page-blog4">
+  <article class="article">
+    <header class="article-header">
+      <div class="eyebrow">Add-On Services · Wayne, PA</div>
+      <h1>Beyond the Detail: Add-On Services That Take Your Vehicle to the Next Level</h1>
+      <div class="article-meta">By <strong>Olympia Detailing</strong> · 5 min read</div>
+    </header>
+    <div class="article-body">
+      <p>Most clients book one of our core packages — Express, Performance, Signature, or Elite. But some vehicles need targeted attention that goes beyond a standard detail. That's where our add-on services come in.</p>
+      <p>Every add-on listed below can be combined with any detailing or ceramic coating package. They're designed to solve specific problems — not pad the bill. If your vehicle doesn't need it, we won't recommend it.</p>
+
+      <h2>Headlight Restoration</h2>
+      <p>Cloudy, yellowed headlights aren't just cosmetic — they reduce nighttime visibility and make your vehicle look older than it is. We wet-sand and polish the lens, then seal it with a UV-resistant coating to prevent re-oxidation. Most headlights go from hazy to crystal clear in about 30 minutes per side.</p>
+
+      <h2>Engine Bay Detail</h2>
+      <p>An often-overlooked area that makes a significant difference — especially before a sale, trade-in, or inspection. We degrease, clean, and condition every visible surface under the hood. Plastic and rubber trim gets dressed. Metal surfaces get wiped down. The result is an engine bay that looks maintained, not just driven.</p>
+
+      <h2>Trim Restoration &amp; Dye</h2>
+      <p>Faded black plastic trim is one of the most common eyesores on Main Line vehicles, especially after a few Pennsylvania winters. We restore trim to its original dark finish using professional-grade dye — not a surface dressing that washes off. The result holds through rain, car washes, and UV exposure for months.</p>
+
+      <h2>Carpet &amp; Seat Shampoo</h2>
+      <p>Deep extraction cleaning for carpets and fabric seats. We pre-treat stains, agitate the fibers, and use a hot water extractor to pull out dirt, salt residue, spills, and odors that vacuuming alone can't reach. This is the single most impactful add-on for any interior detail — the difference is visible and immediate.</p>
+
+      <h2>Specialty Removal — Sap, Tar, Road Paint &amp; Decals</h2>
+      <p>Tree sap, tar spots, road paint overspray, and old decal adhesive are all common on Main Line vehicles. Each requires a specific chemical approach. We use dedicated solvents that dissolve the contaminant without damaging your clear coat, followed by a polish to restore the affected area.</p>
+
+      <h2>Limescale Removal</h2>
+      <p>Hard water spots etched into glass or paint — common from sprinklers, automatic car washes, or mineral-heavy water. Light spots can be chemically dissolved. Heavier etching requires machine polishing. Either way, we assess first and only recommend what's necessary.</p>
+
+      <h2>Polishing &amp; Buffing</h2>
+      <p>A standalone paint enhancement for vehicles that don't need a full correction. One-step machine polish removes light swirl marks, minor scratches, and water spot hazing. The result is a noticeably deeper, glossier finish — and the ideal prep before any ceramic coating installation.</p>
+
+      <h2>Pet Hair Removal</h2>
+      <p>If you've tried vacuuming pet hair out of fabric seats and carpet, you know it doesn't work. We use specialized rubber brushes and extraction tools to physically pull embedded hair from every surface. It's tedious, time-consuming work — and it's one of the most satisfying transformations we do.</p>
+
+      <h2>How to Book an Add-On</h2>
+      <p>Add-ons can be requested when booking any package online, or by calling us at <a href="tel:6106089501" style="color:var(--gold);font-weight:700;">(610) 608-9501</a>. Not sure what your vehicle needs? <a onclick="showPage('contact')" style="color:var(--gold);font-weight:700;cursor:pointer;">Send us a message</a> with a photo and we'll give you an honest recommendation.</p>
+    </div>
+    <footer class="article-footer">
+      <a onclick="showPage('home')" style="cursor:pointer;">&larr; Back to Home</a>
+    </footer>
+  </article>
+  <footer>FOOTER_PLACEHOLDER</footer>
+</main>
+
 <main class="page" id="page-fleet">
   <script type="application/ld+json">
   {
@@ -3776,7 +3954,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
     <div class="inner">
       <div class="cta-banner">
         <h2>LET'S TALK ABOUT YOUR FLEET</h2>
-        <p>Call or email James directly for a custom fleet quote. Serving businesses across Wayne, King of Prussia, Plymouth Meeting, and Greater Philadelphia.</p>
+        <p>Call or email us directly for a custom fleet quote. Serving businesses across Wayne, King of Prussia, Plymouth Meeting, and Greater Philadelphia.</p>
         <div class="btn-row" style="justify-content:center;">
           <a href="mailto:olympiadetailing@gmail.com?subject=Fleet Detailing Inquiry" class="btn-primary">Email for a Fleet Quote</a>
           <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
@@ -3876,9 +4054,9 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div>
         <div class="eyebrow" style="margin-bottom:1rem;">Chester County, PA</div>
         <ul style="list-style:none;">
-          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a onclick="showPage('city-wayne')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Wayne, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Wayne 19087</div></li>
-          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a onclick="showPage('city-malvern')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Malvern, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Malvern 19355</div></li>
-          <li style="padding:0.6rem 0;"><a onclick="showPage('city-berwyn')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Berwyn, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Berwyn 19312</div></li>
+          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a href="/mobile-detailing-wayne-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Wayne, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Wayne 19087</div></li>
+          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a href="/mobile-detailing-malvern-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Malvern, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Malvern 19355</div></li>
+          <li style="padding:0.6rem 0;"><a href="/mobile-detailing-berwyn-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Berwyn, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Berwyn 19312</div></li>
         </ul>
       </div>
 
@@ -3886,8 +4064,8 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div>
         <div class="eyebrow" style="margin-bottom:1rem;">Delaware County, PA</div>
         <ul style="list-style:none;">
-          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a onclick="showPage('city-villanova')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Villanova, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Villanova 19085</div></li>
-          <li style="padding:0.6rem 0;"><a onclick="showPage('city-newtownsquare')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Newtown Square, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Newtown Square 19073</div></li>
+          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a href="/mobile-detailing-villanova-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Villanova, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Villanova 19085</div></li>
+          <li style="padding:0.6rem 0;"><a href="/mobile-detailing-newtown-square-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Newtown Square, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Newtown Square 19073</div></li>
         </ul>
       </div>
 
@@ -3895,9 +4073,9 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div>
         <div class="eyebrow" style="margin-bottom:1rem;">Montgomery County &amp; Philadelphia</div>
         <ul style="list-style:none;">
-          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a onclick="showPage('city-kop')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing King of Prussia, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · KOP 19406</div></li>
-          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a onclick="showPage('city-plymouthmeeting')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Plymouth Meeting, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Plymouth Meeting 19462</div></li>
-          <li style="padding:0.6rem 0;"><a onclick="showPage('city-philadelphia')" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Philadelphia, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Philadelphia 19103</div></li>
+          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a href="/mobile-detailing-king-of-prussia-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing King of Prussia, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · KOP 19406</div></li>
+          <li style="border-bottom:1px solid var(--border);padding:0.6rem 0;"><a href="/mobile-detailing-plymouth-meeting-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Plymouth Meeting, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Plymouth Meeting 19462</div></li>
+          <li style="padding:0.6rem 0;"><a href="/mobile-detailing-philadelphia-pa" style="font-size:0.9rem;font-weight:600;color:var(--dark-text);cursor:pointer;text-decoration:none;">Mobile Detailing Philadelphia, PA</a><div style="font-size:0.75rem;color:var(--light-text);margin-top:0.1rem;">Auto detailing &amp; ceramic coating · Philadelphia 19103</div></li>
         </ul>
       </div>
 
@@ -4050,11 +4228,161 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
   <section class="sec" style="padding-top:0;">
     <div class="cta-banner">
       <h2>GIVE THE GIFT OF A PERFECT DETAIL</h2>
-      <p>Purchase online instantly or call James directly at (610) 608-9501. Serving Wayne, the Main Line, and Greater Philadelphia.</p>
+      <p>Purchase online instantly or call us directly at (610) 608-9501. Serving Wayne, the Main Line, and Greater Philadelphia.</p>
       <div class="btn-row" style="justify-content:center;">
         <a onclick="showPage('giftcard')" class="btn-primary">Purchase a Gift Card</a>
         <a href="tel:+16106089501" class="btn-outline">Call (610) 608-9501</a>
       </div>
+    </div>
+  </section>
+
+  <footer>FOOTER_PLACEHOLDER</footer>
+</main>
+
+<!-- ═══════════════════════════════════════════════
+     CONTACT PAGE
+═══════════════════════════════════════════════ -->
+<main class="page" id="page-contact">
+
+  <div class="page-hero">
+    <div class="inner">
+      <div class="eyebrow">Wayne, PA · Main Line · Greater Philadelphia</div>
+      <h1 class="page-title"><span class="g">CONTACT</span> US</h1>
+      <p class="page-sub">This isn't a generic contact form. The more we understand about your vehicle and your situation, the better we can advise you — before you ever commit to a service.</p>
+    </div>
+  </div>
+
+  <section class="sec">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+
+      <div>
+        <div class="eyebrow">Start the Conversation</div>
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1;letter-spacing:1px;margin-bottom:1.5rem;">TELL US ABOUT <span class="g">YOUR VEHICLE</span></h2>
+        <p style="color:var(--mid-text);font-size:0.95rem;line-height:1.85;margin-bottom:2rem;">Every vehicle is different. Every owner's situation is different. These questions help us understand what you're dealing with so we can give you a real recommendation — not a sales pitch.</p>
+
+        <div id="contactForm" style="display:flex;flex-direction:column;gap:1.2rem;">
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div>
+              <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">Your Name *</label>
+              <input type="text" id="contactName" placeholder="First and last" style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
+            </div>
+            <div>
+              <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">Phone *</label>
+              <input type="tel" id="contactPhone" placeholder="(___) ___-____" style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">Email *</label>
+            <input type="email" id="contactEmail" placeholder="you@email.com" style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">Vehicle (Year / Make / Model)</label>
+            <input type="text" id="contactVehicle" placeholder="e.g. 2023 Porsche Cayenne GTS" style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+
+          <div style="border-top:1px solid var(--border);padding-top:1.5rem;margin-top:0.5rem;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1px;margin-bottom:0.3rem;">A Few Quick Questions</div>
+            <p style="font-size:0.8rem;color:var(--light-text);margin-bottom:1.2rem;">These help us understand your situation before we talk — so we can come prepared with a real recommendation.</p>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">What does your vehicle need right now? *</label>
+            <textarea id="contactChallenge" rows="3" placeholder="Swirl marks on the hood? Interior stains? Need ceramic coating before winter? Just not sure and want advice? Tell us what you're seeing." style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">What have you already tried?</label>
+            <textarea id="contactTried" rows="2" placeholder="Had it detailed before? Tried a DIY ceramic kit? Been to another shop? Never done anything? All good — just helps us know where you're at." style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">Why is now the right time?</label>
+            <textarea id="contactWhy" rows="2" placeholder="New car? Getting ready to sell? Tired of looking at the scratches? Season change coming? No wrong answer." style="width:100%;padding:0.8rem 1rem;border:1px solid var(--border);background:#fff;font-size:0.9rem;font-family:inherit;outline:none;resize:vertical;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--light-text);display:block;margin-bottom:0.4rem;">Upload Photos of Your Vehicle</label>
+            <p style="font-size:0.78rem;color:var(--light-text);margin-bottom:0.8rem;">Optional — helps us see what we're working with before we talk. Scratches, swirls, stains, or just the current condition.</p>
+            <div id="contactUploadArea" onclick="openContactUpload()" style="border:2px dashed var(--border);border-radius:4px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;background:rgba(114,47,55,0.02);" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+              <svg viewBox="0 0 24 24" width="28" height="28" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div style="font-weight:700;font-size:0.85rem;color:var(--dark-text);">Tap to Upload Photos</div>
+              <div style="font-size:0.75rem;color:var(--light-text);margin-top:0.3rem;">JPG, PNG, or HEIC · Up to 5 photos</div>
+            </div>
+            <div id="contactUploadedPhotos" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.8rem;"></div>
+          </div>
+
+          <button id="contactSubmitBtn" onclick="submitContactForm()" class="btn-primary" style="width:100%;text-align:center;padding:1rem;margin-top:0.5rem;font-size:0.85rem;">Send Message</button>
+
+          <div id="contactSuccess" style="display:none;text-align:center;padding:2rem 0;">
+            <div style="width:64px;height:64px;background:rgba(114,47,55,0.1);border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;">
+              <svg viewBox="0 0 24 24" width="28" height="28" stroke="var(--gold)" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;margin-bottom:0.5rem;">MESSAGE <span style="color:var(--gold);">RECEIVED</span></div>
+            <p style="color:var(--mid-text);font-size:0.9rem;line-height:1.7;">Our team will review your message and get back to you within a few hours. If you need an immediate response, call or text <a href="tel:6106089501" style="color:var(--gold);font-weight:700;">(610) 608-9501</a>.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div>
+        <div style="background:var(--sec-alt);padding:2.5rem;margin-bottom:2rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;margin-bottom:1.2rem;">Prefer to Talk <span style="color:var(--gold);">Directly?</span></div>
+          <div style="display:flex;flex-direction:column;gap:1rem;">
+            <a href="tel:6106089501" style="display:flex;align-items:center;gap:0.8rem;text-decoration:none;padding:1rem;background:#fff;border:1px solid var(--border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--gold)" fill="none" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+              <div>
+                <div style="font-weight:700;font-size:0.9rem;color:var(--dark-text);">(610) 608-9501</div>
+                <div style="font-size:0.75rem;color:var(--light-text);">Call us directly</div>
+              </div>
+            </a>
+            <a href="sms:+16106089501" style="display:flex;align-items:center;gap:0.8rem;text-decoration:none;padding:1rem;background:#fff;border:1px solid var(--border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--gold)" fill="none" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <div>
+                <div style="font-weight:700;font-size:0.9rem;color:var(--dark-text);">Text Us</div>
+                <div style="font-size:0.75rem;color:var(--light-text);">Quick questions? Text anytime</div>
+              </div>
+            </a>
+            <a href="mailto:olympiadetailing@gmail.com" style="display:flex;align-items:center;gap:0.8rem;text-decoration:none;padding:1rem;background:#fff;border:1px solid var(--border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="var(--gold)" fill="none" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <div>
+                <div style="font-weight:700;font-size:0.9rem;color:var(--dark-text);">olympiadetailing@gmail.com</div>
+                <div style="font-size:0.75rem;color:var(--light-text);">Email us directly</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div style="background:var(--sec-alt);padding:2.5rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;margin-bottom:1rem;">What Happens <span style="color:var(--gold);">Next?</span></div>
+          <div style="display:flex;flex-direction:column;gap:1.2rem;">
+            <div style="display:flex;gap:1rem;align-items:flex-start;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;min-width:28px;">01</div>
+              <div>
+                <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.2rem;">We Review Your Message</div>
+                <p style="font-size:0.8rem;color:var(--light-text);line-height:1.6;margin:0;">Every submission is personally reviewed by our team. No bots. No auto-replies.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem;align-items:flex-start;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;min-width:28px;">02</div>
+              <div>
+                <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.2rem;">We Give You a Real Recommendation</div>
+                <p style="font-size:0.8rem;color:var(--light-text);line-height:1.6;margin:0;">Based on your vehicle and situation — not a canned upsell. If all you need is a wash, we'll say so.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem;align-items:flex-start;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;min-width:28px;">03</div>
+              <div>
+                <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.2rem;">You Decide</div>
+                <p style="font-size:0.8rem;color:var(--light-text);line-height:1.6;margin:0;">No pressure. No follow-up spam. Just a straight answer and a booking link if you're ready.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -4091,7 +4419,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         <div class="why-item">
           <div class="why-icon"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z"/></svg></div>
           <h3 class="why-title">Call</h3>
-          <p class="why-text"><a href="tel:+16106089501" style="color:var(--gold);font-weight:700;">(610) 608-9501</a><br>Mon–Sat, 8AM–6PM. James answers directly.</p>
+          <p class="why-text"><a href="tel:+16106089501" style="color:var(--gold);font-weight:700;">(610) 608-9501</a><br>Mon–Sat, 8AM–6PM. Our team answers directly.</p>
         </div>
         <div class="why-item">
           <div class="why-icon"><svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--gold)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
@@ -4160,21 +4488,20 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
         <div class="footer-col-title" style="margin-top:1.5rem;">Follow</div>
         <ul class="footer-links">
           <li><a href="https://instagram.com/olympiamdetailing" target="_blank" rel="noopener">Instagram @olympiamdetailing</a></li>
-          <li><a href="https://www.youtube.com/channel/UCxqgTV07IfJt214YjcNF62g" target="_blank" rel="noopener">YouTube — Olympia Detailing</a></li>
           <li><a href="https://nextdoor.com/pages/olympia-mobile-detailing-broomall-pa/" target="_blank" rel="noopener">Nextdoor</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-col-title">Service Areas</div>
         <ul class="footer-links">
-          <li><a onclick="showPage('city-wayne')">Auto Detailing Wayne, PA</a></li>
-          <li><a onclick="showPage('city-kop')">Auto Detailing King of Prussia</a></li>
-          <li><a onclick="showPage('city-villanova')">Auto Detailing Villanova</a></li>
-          <li><a onclick="showPage('city-malvern')">Auto Detailing Malvern</a></li>
-          <li><a onclick="showPage('city-newtownsquare')">Auto Detailing Newtown Square</a></li>
-          <li><a onclick="showPage('city-plymouthmeeting')">Auto Detailing Plymouth Meeting</a></li>
-          <li><a onclick="showPage('city-philadelphia')">Auto Detailing Philadelphia</a></li>
-          <li><a onclick="showPage('city-berwyn')">Auto Detailing Berwyn</a></li>
+          <li><a href="/mobile-detailing-wayne-pa">Auto Detailing Wayne, PA</a></li>
+          <li><a href="/mobile-detailing-king-of-prussia-pa">Auto Detailing King of Prussia</a></li>
+          <li><a href="/mobile-detailing-villanova-pa">Auto Detailing Villanova</a></li>
+          <li><a href="/mobile-detailing-malvern-pa">Auto Detailing Malvern</a></li>
+          <li><a href="/mobile-detailing-newtown-square-pa">Auto Detailing Newtown Square</a></li>
+          <li><a href="/mobile-detailing-plymouth-meeting-pa">Auto Detailing Plymouth Meeting</a></li>
+          <li><a href="/mobile-detailing-philadelphia-pa">Auto Detailing Philadelphia</a></li>
+          <li><a href="/mobile-detailing-berwyn-pa">Auto Detailing Berwyn</a></li>
         </ul>
       </div>
     </div>
@@ -4182,10 +4509,9 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div class="footer-cities-title">Also Serving: Paoli · Bryn Mawr · Haverford · Ardmore · Devon · Exton · West Chester · Conshohocken · Chestnut Hill · Jenkintown</div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2025 Olympia Detailing · James Pratt, Owner · Wayne, PA 19087 · (610) 608-9501 · All rights reserved.</div>
+      <div class="footer-copy">© 2025 Olympia Detailing · Olympia Detailing · Wayne, PA 19087 · (610) 608-9501 · All rights reserved.</div>
       <div class="footer-socials">
         <a href="https://instagram.com/olympiamdetailing" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">IG</a>
-        <a href="https://www.youtube.com/channel/UCxqgTV07IfJt214YjcNF62g" target="_blank" rel="noopener" class="social-link" aria-label="YouTube">YT</a>
         <a href="https://nextdoor.com/pages/olympia-mobile-detailing-broomall-pa/" target="_blank" rel="noopener" class="social-link" aria-label="Nextdoor">ND</a>
         <a href="tel:+16106089501" class="social-link" aria-label="Call Us">☎</a>
       </div>
@@ -4247,7 +4573,7 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
       <div id="popupStep2" style="display:none;">
         <div class="popup-eyebrow">One More Step</div>
         <h2 class="popup-title">ALMOST <span>THERE</span></h2>
-        <p class="popup-desc">Enter your phone number so James can follow up with your booking. We'll text you a reminder when your code is ready to use.</p>
+        <p class="popup-desc">Enter your phone number so our team can follow up with your booking. We'll text you a reminder when your code is ready to use.</p>
         <div style="margin-bottom:1rem;">
           <input type="tel" id="popupPhone" placeholder="(610) 000-0000" autocomplete="tel"
             style="width:100%;border:1px solid var(--border);border-radius:2px;padding:0.75rem 1rem;font-size:0.9rem;font-family:'Barlow',sans-serif;outline:none;transition:border-color 0.2s;"
@@ -4267,9 +4593,13 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
           <svg viewBox="0 0 24 24" width="28" height="28" stroke="var(--gold)" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="popup-eyebrow" style="justify-content:center;">Code Sent!</div>
-        <h2 class="popup-title">CHECK YOUR <span>EMAIL</span></h2>
-        <p class="popup-desc"><span id="popupNameConfirm">Your</span> 10% off code has been sent to <strong id="popupEmailConfirm"></strong>. Use it when booking any detailing package.</p>
-        <p style="font-size:0.82rem;color:var(--light-text);margin-bottom:1.5rem;">Didn't get it? Check your spam folder or text James at (610) 608-9501.</p>
+        <h2 class="popup-title">YOUR CODE IS <span>MAINLINE10</span></h2>
+        <div class="popup-offer" style="margin:1rem 0;">
+          <div class="popup-offer-code">MAINLINE10</div>
+          <div class="popup-offer-label">10% Off Your First Detail — Use at Booking</div>
+        </div>
+        <p class="popup-desc"><span id="popupNameConfirm">Your</span> code has also been emailed to <strong id="popupEmailConfirm"></strong>. Check your spam folder if you don't see it.</p>
+        <p style="font-size:0.82rem;color:var(--light-text);margin-bottom:1.5rem;">Questions? Text us at (610) 608-9501.</p>
         <div class="btn-row" style="justify-content:center;gap:0.8rem;flex-wrap:wrap;">
           <a href="https://app.urable.com/virtual-shop/qGYTkPjCQ4STbAWDZAve/9jTMg5ahhacZLhKevkly" target="_blank" class="btn-primary" onclick="closePopup()">Book Now</a>
           <button class="btn-outline" onclick="closePopup()">Close</button>
@@ -4472,8 +4802,197 @@ window.showPopupSuccess = function(email, name) {
   if (nameEl) nameEl.textContent = name ? name + ', your' : 'Your';
 }
 
+// ── CONTACT FORM ──
+var contactUploadedUrls = [];
+
+window.openContactUpload = function() {
+  cloudinary.openUploadWidget({
+    cloudName: 'daktqosi1',
+    uploadPreset: 'olympia_contact',
+    folder: 'contact-submissions',
+    sources: ['local', 'camera'],
+    multiple: true,
+    maxFiles: 5,
+    clientAllowedFormats: ['jpg', 'jpeg', 'png', 'heic', 'webp'],
+    maxFileSize: 10000000,
+    styles: {
+      palette: {
+        window: '#FFFFFF',
+        windowBorder: '#722F37',
+        tabIcon: '#722F37',
+        menuIcons: '#722F37',
+        textDark: '#1A0A0C',
+        textLight: '#FFFFFF',
+        link: '#722F37',
+        action: '#722F37',
+        inactiveTabIcon: '#B8A0A3',
+        error: '#c43737',
+        inProgress: '#722F37',
+        complete: '#20B832',
+        sourceBg: '#F5F0F0'
+      }
+    }
+  }, function(error, result) {
+    if (!error && result && result.event === 'success') {
+      contactUploadedUrls.push(result.info.secure_url);
+      var container = document.getElementById('contactUploadedPhotos');
+      var thumb = document.createElement('div');
+      thumb.style.cssText = 'width:70px;height:70px;border-radius:4px;overflow:hidden;position:relative;border:1px solid var(--border);';
+      thumb.innerHTML = '<img src="' + result.info.secure_url + '" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+        '<div onclick="event.stopPropagation();this.parentElement.remove();contactUploadedUrls=contactUploadedUrls.filter(function(u){return u!==\'' + result.info.secure_url + '\';})" style="position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.6);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;line-height:1;">✕</div>';
+      container.appendChild(thumb);
+      
+      if (contactUploadedUrls.length >= 5) {
+        document.getElementById('contactUploadArea').style.display = 'none';
+      }
+    }
+  });
+}
+
+window.submitContactForm = function() {
+  const name = document.getElementById('contactName').value.trim();
+  const phone = document.getElementById('contactPhone').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const vehicle = document.getElementById('contactVehicle').value.trim();
+  const challenge = document.getElementById('contactChallenge').value.trim();
+  const tried = document.getElementById('contactTried').value.trim();
+  const why = document.getElementById('contactWhy').value.trim();
+  const btn = document.getElementById('contactSubmitBtn');
+
+  if (!name || !phone || !email || !challenge) {
+    if (!name) document.getElementById('contactName').style.borderColor = 'var(--gold)';
+    if (!phone) document.getElementById('contactPhone').style.borderColor = 'var(--gold)';
+    if (!email) document.getElementById('contactEmail').style.borderColor = 'var(--gold)';
+    if (!challenge) document.getElementById('contactChallenge').style.borderColor = 'var(--gold)';
+    return;
+  }
+
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  // ── LOG TO GOOGLE SHEET ──
+  var SHEET_URL = 'https://script.google.com/macros/s/AKfycbw_KavjvA7JJSeyH6lTL-MAYvuuh6lUhXCylyCidG9_FK68wg_3lu-6-0gIznMryLcd/exec';
+  if (SHEET_URL !== 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: new Date().toLocaleString(),
+        name: name,
+        phone: phone,
+        email: email,
+        vehicle: vehicle || '',
+        challenge: challenge,
+        tried: tried || '',
+        why: why || '',
+        photos: contactUploadedUrls.join(', ')
+      })
+    }).catch(function(err) { console.log('Sheet log error:', err); });
+  }
+
+  const EMAILJS_SERVICE_ID  = 'service_dyhngd9';
+  const EMAILJS_TEMPLATE_ID = 'template_fa6kfx4';
+  const EMAILJS_PUBLIC_KEY  = 'UCfvjrm5GF1fi-gY2';
+
+  const message = 'VEHICLE: ' + (vehicle || 'Not provided') +
+    '\n\nWHAT DOES YOUR VEHICLE NEED?\n' + challenge +
+    '\n\nWHAT HAVE YOU TRIED?\n' + (tried || 'Not answered') +
+    '\n\nWHY NOW?\n' + (why || 'Not answered') +
+    (contactUploadedUrls.length > 0 ? '\n\nPHOTOS UPLOADED (' + contactUploadedUrls.length + '):\n' + contactUploadedUrls.join('\n') : '');
+
+  if (typeof emailjs !== 'undefined') {
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email: 'olympiadetailing@gmail.com',
+      to_name: 'Olympia Detailing',
+      from_name: name,
+      phone: phone,
+      reply_to: email,
+      promo_code: message
+    }, EMAILJS_PUBLIC_KEY)
+    .then(function() {
+      document.getElementById('contactForm').querySelectorAll('input,textarea,button').forEach(function(el) { el.style.display = 'none'; });
+      document.getElementById('contactForm').querySelectorAll('label,div').forEach(function(el) { if (!el.id) el.style.display = 'none'; });
+      document.getElementById('contactSuccess').style.display = 'block';
+    }, function(err) {
+      console.warn('Contact form EmailJS error:', err);
+      document.getElementById('contactForm').querySelectorAll('input,textarea,button').forEach(function(el) { el.style.display = 'none'; });
+      document.getElementById('contactForm').querySelectorAll('label,div').forEach(function(el) { if (!el.id) el.style.display = 'none'; });
+      document.getElementById('contactSuccess').style.display = 'block';
+    });
+  } else {
+    console.log('CONTACT LEAD:', { name, phone, email, vehicle, challenge, tried, why });
+    document.getElementById('contactSuccess').style.display = 'block';
+  }
+}
+
 // Fire after 30 seconds
 setTimeout(showPopup, 30000);
+
+// ── SCROLL REVEAL ANIMATIONS ──
+(function() {
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  function initReveal() {
+    // Auto-add reveal classes to key elements
+    document.querySelectorAll('.sec-title, .sec-desc, .eyebrow').forEach(function(el, i) {
+      if (!el.classList.contains('reveal')) {
+        el.classList.add('reveal');
+        observer.observe(el);
+      }
+    });
+    document.querySelectorAll('.svc-card').forEach(function(el, i) {
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.08) + 's';
+      observer.observe(el);
+    });
+    document.querySelectorAll('.pkg-card').forEach(function(el, i) {
+      el.classList.add('reveal-scale');
+      el.style.transitionDelay = (i * 0.1) + 's';
+      observer.observe(el);
+    });
+    document.querySelectorAll('.review-card').forEach(function(el, i) {
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.1) + 's';
+      observer.observe(el);
+    });
+    document.querySelectorAll('.tl-item').forEach(function(el, i) {
+      el.classList.add('reveal-left');
+      el.style.transitionDelay = (i * 0.12) + 's';
+      observer.observe(el);
+    });
+    document.querySelectorAll('.value-card').forEach(function(el, i) {
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.08) + 's';
+      observer.observe(el);
+    });
+    document.querySelectorAll('.why-item').forEach(function(el, i) {
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.1) + 's';
+      observer.observe(el);
+    });
+    document.querySelectorAll('.ig-item').forEach(function(el, i) {
+      el.classList.add('reveal-scale');
+      el.style.transitionDelay = (i * 0.07) + 's';
+      observer.observe(el);
+    });
+  }
+
+  // Run on page load and whenever showPage is called
+  document.addEventListener('DOMContentLoaded', initReveal);
+  const origShowPage = window.showPage;
+  window.showPage = function(name) {
+    origShowPage(name);
+    setTimeout(initReveal, 50);
+  };
+})();
 
 // Exit intent — mouse leaves top of window
 document.addEventListener('mouseleave', function(e) {
@@ -4521,6 +5040,13 @@ function initSliders() {
 document.addEventListener('DOMContentLoaded', initSliders);
 
 // ─── PAGE NAVIGATION ───
+// ─── QUERY-PARAM ROUTER (for inbound links from city pages) ───
+document.addEventListener('DOMContentLoaded', function() {
+  var params = new URLSearchParams(window.location.search);
+  var go = params.get('go');
+  if (go) { showPage(go); }
+});
+
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -4628,7 +5154,7 @@ const flows = {
     msg: "Paint correction pricing depends on vehicle condition and how many stages are required. It's included in our Signature and Elite detail packages and in all three ceramic coating packages.\n\nFor a standalone correction quote, the best next step is a quick call or text with James.",
     options: [
       { label: 'See correction page', next: 'correction', nav: 'correction' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
       { label: 'Back to pricing', next: 'pricing_ask' },
     ]
   },
@@ -4638,7 +5164,7 @@ const flows = {
       { label: 'Detailing packages', next: 'detailing', nav: 'detailing' },
       { label: 'Coating packages', next: 'ceramic', nav: 'ceramic' },
       { label: 'Book now', next: 'book' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   detailing: {
@@ -4664,7 +5190,7 @@ const flows = {
     options: [
       { label: 'Book Express Detail', next: 'book' },
       { label: 'See all packages', next: 'detailing' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   quiz_mid: {
@@ -4696,7 +5222,7 @@ const flows = {
     options: [
       { label: 'Book Performance Detail', next: 'book' },
       { label: 'Compare packages', next: 'detailing' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   signature: {
@@ -4704,7 +5230,7 @@ const flows = {
     options: [
       { label: 'Book Signature Detail', next: 'book' },
       { label: 'Compare packages', next: 'detailing' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   elite: {
@@ -4712,7 +5238,7 @@ const flows = {
     options: [
       { label: 'Book Elite Detail', next: 'book' },
       { label: 'Compare packages', next: 'detailing' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   ceramic: {
@@ -4761,7 +5287,7 @@ const flows = {
     options: [
       { label: 'Book Performance Coating', next: 'book' },
       { label: 'Compare coatings', next: 'ceramic' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   ceramic_sig: {
@@ -4769,7 +5295,7 @@ const flows = {
     options: [
       { label: 'Book Signature Coating', next: 'book' },
       { label: 'Compare coatings', next: 'ceramic' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   ceramic_elite: {
@@ -4777,7 +5303,7 @@ const flows = {
     options: [
       { label: 'Book Elite Coating', next: 'book' },
       { label: 'Compare coatings', next: 'ceramic' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   correction: {
@@ -4794,7 +5320,7 @@ const flows = {
     options: [
       { label: 'Book Performance Correction', next: 'book' },
       { label: 'See all packages', next: 'correction', nav: 'correction' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   correction_scratch: {
@@ -4802,7 +5328,7 @@ const flows = {
     options: [
       { label: 'Book Signature Correction', next: 'book' },
       { label: 'See all packages', next: 'correction', nav: 'correction' },
-      { label: 'Talk to James', next: 'contact' },
+      { label: 'Talk to Our Team', next: 'contact' },
     ]
   },
   correction_combo: {
@@ -4830,7 +5356,7 @@ const flows = {
     ]
   },
   contact: {
-    msg: "James is the best person to talk to — he typically responds within minutes during business hours (Mon–Sat, 8AM–6PM).",
+    msg: "Our team typically responds within minutes during business hours (Mon–Sat, 8AM–6PM).",
     options: [
       { label: '📞 Call (610) 608-9501', next: 'call_link' },
       { label: '💬 Text (610) 608-9501', next: 'sms_link' },
@@ -4838,7 +5364,7 @@ const flows = {
     ]
   },
   sms: {
-    msg: "Tap below to open a text — or message (610) 608-9501 directly. James typically responds within minutes.",
+    msg: "Tap below to open a text — or message (610) 608-9501 directly. Our team typically responds within minutes.",
     options: [
       { label: '💬 Open Text Message', next: 'sms_link' },
       { label: 'Call instead', next: 'call_link' },
@@ -4846,7 +5372,7 @@ const flows = {
     ]
   },
   thanks: {
-    msg: "Thanks for reaching out! James will follow up shortly. You can also book instantly online anytime.",
+    msg: "Thanks for reaching out! Our team will follow up shortly. You can also book instantly online anytime.",
     options: [
       { label: '📅 Book Online', next: 'book_link' },
       { label: 'Start over', next: 'start' }
@@ -4880,7 +5406,7 @@ function renderStep(key) {
   }
   if (key === 'call_link') {
     window.location.href = 'tel:' + PHONE;
-    addBotMsg("Calling (610) 608-9501 📞\n\nJames is available Mon–Sat, 8AM–6PM. If you hit voicemail, leave a message and he'll call back shortly.", [
+    addBotMsg("Calling (610) 608-9501 📞\n\nOur team is available Mon–Sat, 8AM–6PM. If you hit voicemail, leave a message and we'll call back shortly.", [
       { label: 'Text instead', next: 'sms' },
       { label: 'Book online', next: 'book' },
     ]);
@@ -4888,7 +5414,7 @@ function renderStep(key) {
   }
   if (key === 'sms_link') {
     window.location.href = 'sms:' + PHONE;
-    addBotMsg("Text message opened 💬\n\nIf it didn't open automatically, text (610) 608-9501 directly. James typically responds within minutes during business hours.", [
+    addBotMsg("Text message opened 💬\n\nIf it didn't open automatically, text (610) 608-9501 directly. Our team typically responds within minutes during business hours.", [
       { label: 'Book online instead', next: 'book' },
       { label: 'Start over', next: 'start' },
     ]);
@@ -4982,8 +5508,8 @@ function sendUserMsg() {
     } else if (lower.includes('salt') || lower.includes('winter') || lower.includes('rust') || lower.includes('protect')) {
       renderStep('ceramic');
     } else {
-      addBotMsg('Good question — James can give you a straight answer on that. Want to call, text, or just browse the site?', [
-        { label: 'Talk to James', next: 'contact' },
+      addBotMsg('Good question — Our team can give you a straight answer on that. Want to call, text, or just browse the site?', [
+        { label: 'Talk to Our Team', next: 'contact' },
         { label: 'View services', next: 'start' },
         { label: 'Book online', next: 'book' },
       ]);
