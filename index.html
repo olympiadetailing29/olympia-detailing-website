@@ -4891,39 +4891,33 @@ window.submitContactForm = function() {
     }).catch(function(err) { console.log('Sheet log error:', err); });
   }
 
-  const EMAILJS_SERVICE_ID  = 'service_dyhngd9';
-  const EMAILJS_TEMPLATE_ID = 'template_fa6kfx4';
-  const EMAILJS_PUBLIC_KEY  = 'UCfvjrm5GF1fi-gY2';
-
-  const message = 'VEHICLE: ' + (vehicle || 'Not provided') +
-    '\n\nWHAT DOES YOUR VEHICLE NEED?\n' + challenge +
-    '\n\nWHAT HAVE YOU TRIED?\n' + (tried || 'Not answered') +
-    '\n\nWHY NOW?\n' + (why || 'Not answered') +
-    (contactUploadedUrls.length > 0 ? '\n\nPHOTOS UPLOADED (' + contactUploadedUrls.length + '):\n' + contactUploadedUrls.join('\n') : '');
-
-  if (typeof emailjs !== 'undefined') {
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email: 'olympiadetailing@gmail.com',
-      to_name: 'Olympia Detailing',
-      from_name: name,
+  // ── FORMSPREE EMAIL DELIVERY ──
+  fetch('https://formspree.io/f/xojzkvnv', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      name: name,
       phone: phone,
-      reply_to: email,
-      promo_code: message
-    }, EMAILJS_PUBLIC_KEY)
-    .then(function() {
-      document.getElementById('contactForm').querySelectorAll('input,textarea,button').forEach(function(el) { el.style.display = 'none'; });
-      document.getElementById('contactForm').querySelectorAll('label,div').forEach(function(el) { if (!el.id) el.style.display = 'none'; });
-      document.getElementById('contactSuccess').style.display = 'block';
-    }, function(err) {
-      console.warn('Contact form EmailJS error:', err);
-      document.getElementById('contactForm').querySelectorAll('input,textarea,button').forEach(function(el) { el.style.display = 'none'; });
-      document.getElementById('contactForm').querySelectorAll('label,div').forEach(function(el) { if (!el.id) el.style.display = 'none'; });
-      document.getElementById('contactSuccess').style.display = 'block';
-    });
-  } else {
-    console.log('CONTACT LEAD:', { name, phone, email, vehicle, challenge, tried, why });
+      email: email,
+      _replyto: email,
+      vehicle: vehicle || 'Not provided',
+      message: challenge,
+      tried: tried || 'Not answered',
+      why: why || 'Not answered',
+      photos: contactUploadedUrls.length > 0 ? contactUploadedUrls.join(', ') : 'None'
+    })
+  })
+  .then(function(res) {
+    document.getElementById('contactForm').querySelectorAll('input,textarea,button').forEach(function(el) { el.style.display = 'none'; });
+    document.getElementById('contactForm').querySelectorAll('label,div').forEach(function(el) { if (!el.id) el.style.display = 'none'; });
     document.getElementById('contactSuccess').style.display = 'block';
-  }
+  })
+  .catch(function(err) {
+    console.warn('Formspree error:', err);
+    document.getElementById('contactForm').querySelectorAll('input,textarea,button').forEach(function(el) { el.style.display = 'none'; });
+    document.getElementById('contactForm').querySelectorAll('label,div').forEach(function(el) { if (!el.id) el.style.display = 'none'; });
+    document.getElementById('contactSuccess').style.display = 'block';
+  });
 }
 
 // Fire after 30 seconds
