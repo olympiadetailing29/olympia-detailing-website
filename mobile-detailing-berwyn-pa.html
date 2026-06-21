@@ -1328,6 +1328,44 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 
 
 <script>
+// ─── HUBSPOT FORMS API ───
+// Routes site leads into HubSpot CRM (contact created, deal opens, lead source tagged).
+// Runs alongside existing EmailJS / Google Sheet capture — does not replace them.
+const HS_PORTAL_ID = '243241983';
+const HS_POPUP_FORM_GUID   = '7f1e66e3-35b8-4871-831c-b65d4e3f09b9';
+const HS_CONTACT_FORM_GUID = 'a66bf4c5-c42a-4cee-9d49-e4aa8f8ccc10';
+
+// City for this landing page — used for landing_page_city tracking in HubSpot.
+window.OLYMPIA_PAGE_CITY = 'Berwyn';
+
+// Posts a set of fields to a HubSpot form. Fails silently so it never blocks the user.
+window.submitToHubSpot = function(formGuid, fields) {
+  try {
+    const payload = {
+      fields: fields,
+      context: {
+        pageUri: window.location.href,
+        pageName: document.title
+      }
+    };
+    const hutk = (document.cookie.match(/hubspotutk=([^;]+)/) || [])[1];
+    if (hutk) payload.context.hutk = hutk;
+
+    return fetch(
+      'https://api.hsforms.com/submissions/v3/integration/submit/' +
+        HS_PORTAL_ID + '/' + formGuid,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }
+    ).catch(function(err) { console.warn('HubSpot submit error:', err); });
+  } catch (err) {
+    console.warn('HubSpot submit exception:', err);
+    return Promise.resolve();
+  }
+};
+
 // ─── EXIT INTENT POPUP ───
 let popupShown = false;
 
@@ -1397,6 +1435,19 @@ window.popupSubmit = function() {
   const name = document.getElementById('popupName').value.trim();
   submitBtn.textContent = 'Sending...';
   submitBtn.disabled = true;
+
+  // ── HubSpot: create contact + deal, tag source + discount ──
+  var hsFirst = name, hsLast = '';
+  var sp = name.indexOf(' ');
+  if (sp > -1) { hsFirst = name.slice(0, sp); hsLast = name.slice(sp + 1); }
+  submitToHubSpot(HS_POPUP_FORM_GUID, [
+    { name: 'firstname', value: hsFirst },
+    { name: 'lastname',  value: hsLast },
+    { name: 'email',     value: email },
+    { name: 'phone',     value: phone },
+    { name: 'lead_source',     value: 'Website popup' },
+    { name: 'active_discount', value: '10% website popup' }
+  ]);
 
   // ── EmailJS send ──
   // SETUP REQUIRED: Sign up at emailjs.com, create a service + template, replace the IDs below
@@ -1503,6 +1554,26 @@ window.submitContactForm = function() {
 
   btn.textContent = 'Sending...';
   btn.disabled = true;
+
+  // ── HubSpot: create contact + deal from contact form ──
+  var cFirst = name, cLast = '';
+  var cSp = name.indexOf(' ');
+  if (cSp > -1) { cFirst = name.slice(0, cSp); cLast = name.slice(cSp + 1); }
+  var hsFields = [
+    { name: 'firstname', value: cFirst },
+    { name: 'lastname',  value: cLast },
+    { name: 'email',     value: email },
+    { name: 'phone',     value: phone },
+    { name: 'lead_source', value: 'Contact form' },
+    { name: 'landing_page_city', value: window.OLYMPIA_PAGE_CITY || 'Main Site' }
+  ];
+  if (vehicle)   hsFields.push({ name: 'vehicle_yearmakemodel', value: vehicle });
+  if (challenge) hsFields.push({ name: 'what_does_your_vehicle_need', value: challenge });
+  if (tried)     hsFields.push({ name: 'what_have_you_tried', value: tried });
+  if (why)       hsFields.push({ name: 'why_now', value: why });
+  if (contactUploadedUrls.length > 0)
+    hsFields.push({ name: 'message', value: 'Photos: ' + contactUploadedUrls.join(', ') });
+  submitToHubSpot(HS_CONTACT_FORM_GUID, hsFields);
 
   // ── LOG TO GOOGLE SHEET ──
   var SHEET_URL = 'https://script.google.com/macros/s/AKfycbw_KavjvA7JJSeyH6lTL-MAYvuuh6lUhXCylyCidG9_FK68wg_3lu-6-0gIznMryLcd/exec';
