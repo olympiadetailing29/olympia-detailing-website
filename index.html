@@ -4695,40 +4695,30 @@ footer{background:#1a0a0c;border-top:1px solid #2d1518;padding:3rem 2rem 2rem;}
 
 <script>
 // ─── HUBSPOT FORMS API ───
-// Routes site leads into HubSpot CRM (contact created, deal opens, lead source tagged).
+// Routes site leads into GoHighLevel CRM via Inbound Webhook (creates contact, fires workflow).
 // Runs alongside existing EmailJS / Google Sheet capture — does not replace them.
-const HS_PORTAL_ID = '243241983';
-const HS_POPUP_FORM_GUID   = '7f1e66e3-35b8-4871-831c-b65d4e3f09b9';
-const HS_CONTACT_FORM_GUID = 'a66bf4c5-c42a-4cee-9d49-e4aa8f8ccc10';
+const GHL_WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/8XrcaN31wg8SgoWc1mZF/webhook-trigger/dda9a636-2eeb-4d6a-a1ff-76508c66c9a2';
 
 // Set this per city page. Leave as 'Main Site' on the homepage.
 // On a city landing page, change to e.g. 'Wayne', 'Villanova', 'Malvern'.
 window.OLYMPIA_PAGE_CITY = window.OLYMPIA_PAGE_CITY || 'Main Site';
 
-// Posts a set of fields to a HubSpot form. Fails silently so it never blocks the user.
-window.submitToHubSpot = function(formGuid, fields) {
+// Posts a flat JSON object to the GHL inbound webhook. Fails silently so it never blocks the user.
+window.submitToGHL = function(data) {
   try {
-    const payload = {
-      fields: fields,
-      context: {
-        pageUri: window.location.href,
-        pageName: document.title
-      }
-    };
-    const hutk = (document.cookie.match(/hubspotutk=([^;]+)/) || [])[1];
-    if (hutk) payload.context.hutk = hutk;
+    const payload = Object.assign({
+      page_uri: window.location.href,
+      page_name: document.title,
+      landing_page_city: window.OLYMPIA_PAGE_CITY || 'Main Site'
+    }, data);
 
-    return fetch(
-      'https://api.hsforms.com/submissions/v3/integration/submit/' +
-        HS_PORTAL_ID + '/' + formGuid,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }
-    ).catch(function(err) { console.warn('HubSpot submit error:', err); });
+    return fetch(GHL_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(function(err) { console.warn('GHL submit error:', err); });
   } catch (err) {
-    console.warn('HubSpot submit exception:', err);
+    console.warn('GHL submit exception:', err);
     return Promise.resolve();
   }
 };
@@ -4803,18 +4793,19 @@ window.popupSubmit = function() {
   submitBtn.textContent = 'Sending...';
   submitBtn.disabled = true;
 
-  // ── HubSpot: create contact + deal, tag source + discount ──
-  var hsFirst = name, hsLast = '';
+  // ── GHL: create contact, tag source + discount, fire nurture workflow ──
+  var pFirst = name, pLast = '';
   var sp = name.indexOf(' ');
-  if (sp > -1) { hsFirst = name.slice(0, sp); hsLast = name.slice(sp + 1); }
-  submitToHubSpot(HS_POPUP_FORM_GUID, [
-    { name: 'firstname', value: hsFirst },
-    { name: 'lastname',  value: hsLast },
-    { name: 'email',     value: email },
-    { name: 'phone',     value: phone },
-    { name: 'lead_source',     value: 'Website popup' },
-    { name: 'active_discount', value: '10% website popup' }
-  ]);
+  if (sp > -1) { pFirst = name.slice(0, sp); pLast = name.slice(sp + 1); }
+  submitToGHL({
+    first_name: pFirst,
+    last_name:  pLast,
+    email:      email,
+    phone:      phone,
+    lead_source: 'Website popup',
+    active_discount: '10% website popup',
+    form_type: 'popup'
+  });
 
   // ── EmailJS send ──
   // SETUP REQUIRED: Sign up at emailjs.com, create a service + template, replace the IDs below
@@ -4922,25 +4913,25 @@ window.submitContactForm = function() {
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  // ── HubSpot: create contact + deal from contact form ──
+  // ── GHL: create contact from contact form, fire nurture workflow ──
   var cFirst = name, cLast = '';
   var cSp = name.indexOf(' ');
   if (cSp > -1) { cFirst = name.slice(0, cSp); cLast = name.slice(cSp + 1); }
-  var hsFields = [
-    { name: 'firstname', value: cFirst },
-    { name: 'lastname',  value: cLast },
-    { name: 'email',     value: email },
-    { name: 'phone',     value: phone },
-    { name: 'lead_source', value: 'Contact form' },
-    { name: 'landing_page_city', value: window.OLYMPIA_PAGE_CITY || 'Main Site' }
-  ];
-  if (vehicle)   hsFields.push({ name: 'vehicle_yearmakemodel', value: vehicle });
-  if (challenge) hsFields.push({ name: 'what_does_your_vehicle_need', value: challenge });
-  if (tried)     hsFields.push({ name: 'what_have_you_tried', value: tried });
-  if (why)       hsFields.push({ name: 'why_now', value: why });
+  var ghlData = {
+    first_name: cFirst,
+    last_name:  cLast,
+    email:      email,
+    phone:      phone,
+    lead_source: 'Contact form',
+    form_type: 'contact',
+    vehicle_yearmakemodel: vehicle || '',
+    what_does_your_vehicle_need: challenge || '',
+    what_have_you_tried: tried || '',
+    why_now: why || ''
+  };
   if (contactUploadedUrls.length > 0)
-    hsFields.push({ name: 'message', value: 'Photos: ' + contactUploadedUrls.join(', ') });
-  submitToHubSpot(HS_CONTACT_FORM_GUID, hsFields);
+    ghlData.photo_urls = contactUploadedUrls.join(', ');
+  submitToGHL(ghlData);
   var SHEET_URL = 'https://script.google.com/macros/s/AKfycbw_KavjvA7JJSeyH6lTL-MAYvuuh6lUhXCylyCidG9_FK68wg_3lu-6-0gIznMryLcd/exec';
   if (SHEET_URL !== 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
     fetch(SHEET_URL, {
