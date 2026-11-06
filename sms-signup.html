@@ -116,7 +116,7 @@ a:hover{opacity:0.8;}
     <h2>YOU'RE IN — HERE'S YOUR 10% OFF</h2>
     <div class="code-box">MAINLINE10</div>
     <p>Use code <strong>MAINLINE10</strong> when you book your first service for 10% off. We've also sent it to your email.</p>
-    <p id="smsConfirm" style="display:none;">You're signed up for text updates too — watch for a message from us. Reply STOP anytime to opt out.</p>
+    <p id="smsConfirm" style="display:none;">You're signed up for text updates from (888) 340-8663. Reply STOP anytime to opt out.</p>
     <p style="margin-top:1.2rem;"><a href="/" class="nav-cta" style="display:inline-block;">Book Your Detail</a></p>
   </div>
 </div>
@@ -126,8 +126,13 @@ a:hover{opacity:0.8;}
   <div class="legal"><a href="/privacy-policy.html">Privacy Policy</a> · <a href="/terms.html">Terms &amp; Conditions</a> · <a href="/">Home</a></div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-const GHL_WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/8XrcaN31wg8SgoWc1mZF/webhook-trigger/dda9a636-2eeb-4d6a-a1ff-76508c66c9a2';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw_KavjvA7JJSeyH6lTL-MAYvuuh6lUhXCylyCidG9_FK68wg_3lu-6-0gIznMryLcd/exec';
+const FORMSPREE_URL = 'https://formspree.io/f/xojzkvnv';
+const EMAILJS_SERVICE_ID  = 'service_dyhngd9';
+const EMAILJS_TEMPLATE_ID = 'template_fa6kfx4';
+const EMAILJS_PUBLIC_KEY  = 'UCfvjrm5GF1fi-gY2';
 
 function doSignup() {
   var email   = document.getElementById('email').value.trim();
@@ -147,24 +152,31 @@ function doSignup() {
   btn.textContent = 'Signing you up...';
   btn.disabled = true;
 
-  var payload = {
-    email: email,
-    phone: phone,
-    lead_source: 'SMS signup',
-    active_discount: '10% website popup',
-    landing_page_city: 'Signup Page',
-    form_type: 'signup_offer',
-    page_uri: window.location.href,
-    page_name: document.title
-  };
-  if (consent) { payload.sms_consent_given = 'Yes'; }
+  var note = 'Sign-up page: 10% off (code MAINLINE10). SMS consent: ' + (consent ? 'Yes' : 'No');
 
-  fetch(GHL_WEBHOOK_URL, {
+  // Log to the Google Sheet and email the lead via Formspree, like the contact form
+  fetch(SHEET_URL, {
     method: 'POST',
+    mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  }).then(function(){ showSuccess(consent); })
-    .catch(function(err){ console.warn('GHL signup error:', err); showSuccess(consent); });
+    body: JSON.stringify({ date: new Date().toLocaleString(), name: '', phone: phone, email: email, vehicle: '', challenge: note, tried: '', why: '', photos: '' })
+  }).catch(function(err){ console.log('Sheet log error:', err); });
+  fetch(FORMSPREE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ email: email, _replyto: email, phone: phone, message: note, page: 'Sign-up page' })
+  }).catch(function(err){ console.warn('Formspree error:', err); });
+
+  // Email the 10% code with the same EmailJS template as the site popup
+  if (typeof emailjs === 'undefined') { showSuccess(consent); return; }
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email:   email,
+    to_name:    'there',
+    phone:      phone,
+    promo_code: 'MAINLINE10',
+    from_name:  'Olympia Detailing',
+    reply_to:   'olympiadetailing@gmail.com'
+  }, EMAILJS_PUBLIC_KEY).then(function(){ showSuccess(consent); }, function(err){ console.warn('EmailJS error:', err); showSuccess(consent); });
 }
 
 function showSuccess(consent) {
